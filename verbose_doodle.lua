@@ -16,8 +16,8 @@ ScreenGui.Parent = playerGui
 
 -- مێنوی سەرەکی (دیزاینی مۆدێرن و سەرنجڕاکێشی سور)
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 280, 0, 390)
-MainFrame.Position = UDim2.new(0.5, -140, 0.5, -195)
+MainFrame.Size = UDim2.new(0, 280, 0, 437)
+MainFrame.Position = UDim2.new(0.5, -140, 0.5, -218)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -82,7 +82,7 @@ MinBtn.MouseButton1Click:Connect(function()
         end
     end
     if isOpen then
-        MainFrame.Size = UDim2.new(0, 280, 0, 390)
+        MainFrame.Size = UDim2.new(0, 280, 0, 437)
     else
         MainFrame.Size = UDim2.new(0, 280, 0, 45)
     end
@@ -161,11 +161,139 @@ createToggle("Big Character", 149, function(state)
     end
 end)
 
--- ٤. Save Checkpoint Button
+-- ٤. Fly - پەروازکردن
+local flyEnabled = false
+local flySpeed = 25
+local flying = false
+local bodyVelocity
+local bodyGyro
+
+local function startFly()
+    local character = player.Character
+    if not character or not character:FindFirstChild("HumanoidRootPart") then return end
+    
+    local rootPart = character.HumanoidRootPart
+    
+    bodyVelocity = Instance.new("BodyVelocity")
+    bodyVelocity.Velocity = Vector3.new(0, 0, 0)
+    bodyVelocity.MaxForce = Vector3.new(100000, 100000, 100000)
+    bodyVelocity.Parent = rootPart
+    
+    bodyGyro = Instance.new("BodyGyro")
+    bodyGyro.MaxTorque = Vector3.new(100000, 100000, 100000)
+    bodyGyro.CFrame = rootPart.CFrame
+    bodyGyro.Parent = rootPart
+    
+    flying = true
+end
+
+local function stopFly()
+    if bodyVelocity then bodyVelocity:Destroy() end
+    if bodyGyro then bodyGyro:Destroy() end
+    flying = false
+end
+
+RunService.Stepped:Connect(function()
+    if flyEnabled and flying then
+        local character = player.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            local rootPart = character.HumanoidRootPart
+            local camera = workspace.CurrentCamera
+            local moveDir = Vector3.new(0, 0, 0)
+            
+            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
+                moveDir = moveDir + (camera.CFrame.LookVector)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
+                moveDir = moveDir - (camera.CFrame.LookVector)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
+                moveDir = moveDir - (camera.CFrame.RightVector)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
+                moveDir = moveDir + (camera.CFrame.RightVector)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.Space) then
+                moveDir = moveDir + Vector3.new(0, 1, 0)
+            end
+            if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then
+                moveDir = moveDir + Vector3.new(0, -1, 0)
+            end
+            
+            if moveDir.Magnitude > 0 then
+                moveDir = moveDir.Unit
+            end
+            
+            bodyVelocity.Velocity = moveDir * flySpeed
+            bodyGyro.CFrame = camera.CFrame
+        end
+    end
+end)
+
+createToggle("Fly", 196, function(state)
+    flyEnabled = state
+    if state then
+        startFly()
+    else
+        stopFly()
+    end
+end)
+
+-- ٥. تێنۆ فلای (Speed Up)
+local SpeedUpBtn = Instance.new("TextButton")
+SpeedUpBtn.Size = UDim2.new(0.48, -6, 0, 32)
+SpeedUpBtn.Position = UDim2.new(0, 12, 0, 243)
+SpeedUpBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
+SpeedUpBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedUpBtn.TextSize = 12
+SpeedUpBtn.Font = Enum.Font.GothamBold
+SpeedUpBtn.Text = "Speed +"
+SpeedUpBtn.Parent = MainFrame
+
+local SpeedUpCorner = Instance.new("UICorner")
+SpeedUpCorner.CornerRadius = UDim.new(0, 8)
+SpeedUpCorner.Parent = SpeedUpBtn
+
+local SpeedUpStroke = Instance.new("UIStroke")
+SpeedUpStroke.Color = Color3.fromRGB(180, 40, 40)
+SpeedUpStroke.Thickness = 1
+SpeedUpStroke.Parent = SpeedUpBtn
+
+SpeedUpBtn.MouseButton1Click:Connect(function()
+    flySpeed = math.min(flySpeed + 5, 150)
+    SpeedUpBtn.Text = "Speed: " .. flySpeed
+end)
+
+-- ٦. کێمکردنی فلای (Speed Down)
+local SpeedDownBtn = Instance.new("TextButton")
+SpeedDownBtn.Size = UDim2.new(0.48, -6, 0, 32)
+SpeedDownBtn.Position = UDim2.new(0.5, 6, 0, 243)
+SpeedDownBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
+SpeedDownBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedDownBtn.TextSize = 12
+SpeedDownBtn.Font = Enum.Font.GothamBold
+SpeedDownBtn.Text = "Speed -"
+SpeedDownBtn.Parent = MainFrame
+
+local SpeedDownCorner = Instance.new("UICorner")
+SpeedDownCorner.CornerRadius = UDim.new(0, 8)
+SpeedDownCorner.Parent = SpeedDownBtn
+
+local SpeedDownStroke = Instance.new("UIStroke")
+SpeedDownStroke.Color = Color3.fromRGB(180, 40, 40)
+SpeedDownStroke.Thickness = 1
+SpeedDownStroke.Parent = SpeedDownBtn
+
+SpeedDownBtn.MouseButton1Click:Connect(function()
+    flySpeed = math.max(flySpeed - 5, 5)
+    SpeedDownBtn.Text = "Speed: " .. flySpeed
+end)
+
+-- ٧. Save Checkpoint Button
 local savedCFrame = nil
 local SaveCPBtn = Instance.new("TextButton")
 SaveCPBtn.Size = UDim2.new(1, -24, 0, 42)
-SaveCPBtn.Position = UDim2.new(0, 12, 0, 196)
+SaveCPBtn.Position = UDim2.new(0, 12, 0, 280)
 SaveCPBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
 SaveCPBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 SaveCPBtn.TextSize = 13
@@ -196,10 +324,10 @@ SaveCPBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ٥. Teleport to Checkpoint Button
+-- ٨. Teleport to Checkpoint Button
 local TPCPBtn = Instance.new("TextButton")
 TPCPBtn.Size = UDim2.new(1, -24, 0, 42)
-TPCPBtn.Position = UDim2.new(0, 12, 0, 243)
+TPCPBtn.Position = UDim2.new(0, 12, 0, 327)
 TPCPBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
 TPCPBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 TPCPBtn.TextSize = 13
@@ -240,10 +368,10 @@ TPCPBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ٦. TikTok Link Button
+-- ٩. TikTok Link Button
 local TikTokBtn = Instance.new("TextButton")
 TikTokBtn.Size = UDim2.new(1, -24, 0, 42)
-TikTokBtn.Position = UDim2.new(0, 12, 0, 290)
+TikTokBtn.Position = UDim2.new(0, 12, 0, 374)
 TikTokBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
 TikTokBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
 TikTokBtn.TextSize = 13
