@@ -161,7 +161,7 @@ createToggle("Big Character", 149, function(state)
     end
 end)
 
--- ٤. Fly - پەروازکردن
+-- ٤. Fly - پەروازکردن (دروست کراوە)
 local flyEnabled = false
 local flySpeed = 25
 local flying = false
@@ -173,6 +173,10 @@ local function startFly()
     if not character or not character:FindFirstChild("HumanoidRootPart") then return end
     
     local rootPart = character.HumanoidRootPart
+    
+    -- پاشەکەوتی بۆ ڕێگرتن لە فریی کۆن
+    if bodyVelocity then bodyVelocity:Destroy() end
+    if bodyGyro then bodyGyro:Destroy() end
     
     bodyVelocity = Instance.new("BodyVelocity")
     bodyVelocity.Velocity = Vector3.new(0, 0, 0)
@@ -190,6 +194,8 @@ end
 local function stopFly()
     if bodyVelocity then bodyVelocity:Destroy() end
     if bodyGyro then bodyGyro:Destroy() end
+    bodyVelocity = nil
+    bodyGyro = nil
     flying = false
 end
 
@@ -224,8 +230,14 @@ RunService.Stepped:Connect(function()
                 moveDir = moveDir.Unit
             end
             
-            bodyVelocity.Velocity = moveDir * flySpeed
-            bodyGyro.CFrame = camera.CFrame
+            if bodyVelocity then
+                bodyVelocity.Velocity = moveDir * flySpeed
+            end
+            if bodyGyro then
+                bodyGyro.CFrame = camera.CFrame
+            end
+        else
+            stopFly()
         end
     end
 end)
