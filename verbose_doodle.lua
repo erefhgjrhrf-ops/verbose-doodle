@@ -16,8 +16,8 @@ ScreenGui.Parent = playerGui
 
 -- مێنوی سەرەکی (دیزاینی مۆدێرن و سەرنجڕاکێشی سور)
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 280, 0, 440)
-MainFrame.Position = UDim2.new(0.5, -140, 0.5, -220)
+MainFrame.Size = UDim2.new(0, 280, 0, 390)
+MainFrame.Position = UDim2.new(0.5, -140, 0.5, -195)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -82,7 +82,7 @@ MinBtn.MouseButton1Click:Connect(function()
         end
     end
     if isOpen then
-        MainFrame.Size = UDim2.new(0, 280, 0, 440)
+        MainFrame.Size = UDim2.new(0, 280, 0, 390)
     else
         MainFrame.Size = UDim2.new(0, 280, 0, 45)
     end
@@ -161,8 +161,8 @@ createToggle("Big Character", 149, function(state)
     end
 end)
 
--- ✨ ٤. Add Name Display on Body ✨
-function AddNameTagToBody(char)
+-- ✨ ٤. Add Name Tag on All Body Parts ✨
+function AddNameTagToAllParts(char)
     local parts = {
         char:FindFirstChild("Head"),
         char:FindFirstChild("UpperTorso") or char:FindFirstChild("Torso"),
@@ -186,6 +186,7 @@ function AddNameTagToBody(char)
             local billboardGui = Instance.new("BillboardGui")
             billboardGui.Size = UDim2.new(0, 150, 0, 40)
             billboardGui.MaxDistance = 100
+            billboardGui.StudsOffset = Vector3.new(0, 3, 0)
             billboardGui.Parent = part
             billboardGui.Adornee = part
             
@@ -210,19 +211,22 @@ function AddNameTagToBody(char)
     print("✅ Name Tags Added to All Body Parts!")
 end
 
+function RemoveNameTags(char)
+    for _, part in ipairs(char:GetDescendants()) do
+        if part:IsA("BasePart") then
+            local billboards = part:FindFirstChildOfClass("BillboardGui")
+            if billboards then billboards:Destroy() end
+        end
+    end
+end
+
 createToggle("Show Name Tag", 196, function(state)
     local character = player.Character
     if character then
         if state then
-            AddNameTagToBody(character)
+            AddNameTagToAllParts(character)
         else
-            -- لابردنی تمام ناونیشانەکان
-            for _, part in ipairs(character:GetDescendants()) do
-                if part:IsA("BasePart") then
-                    local billboards = part:FindFirstChildOfClass("BillboardGui")
-                    if billboards then billboards:Destroy() end
-                end
-            end
+            RemoveNameTags(character)
         end
     end
 end)
@@ -361,14 +365,4 @@ ToggleStroke.Parent = ToggleButton
 
 ToggleButton.MouseButton1Click:Connect(function()
     MainFrame.Visible = not MainFrame.Visible
-end)
-
--- Apply name tags on spawn
-if player.Character then
-    AddNameTagToBody(player.Character)
-end
-
-player.CharacterAdded:Connect(function(newChar)
-    wait(0.5)
-    AddNameTagToBody(newChar)
 end)
