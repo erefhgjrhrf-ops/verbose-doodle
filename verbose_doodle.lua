@@ -16,8 +16,8 @@ ScreenGui.Parent = playerGui
 
 -- مێنوی سەرەکی (دیزاینی مۆدێرن و سەرنجڕاکێشی سور)
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 280, 0, 343)
-MainFrame.Position = UDim2.new(0.5, -140, 0.5, -171)
+MainFrame.Size = UDim2.new(0, 280, 0, 450)
+MainFrame.Position = UDim2.new(0.5, -140, 0.5, -225)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -82,7 +82,7 @@ MinBtn.MouseButton1Click:Connect(function()
         end
     end
     if isOpen then
-        MainFrame.Size = UDim2.new(0, 280, 0, 343)
+        MainFrame.Size = UDim2.new(0, 280, 0, 450)
     else
         MainFrame.Size = UDim2.new(0, 280, 0, 45)
     end
@@ -161,11 +161,121 @@ createToggle("Big Character", 149, function(state)
     end
 end)
 
--- ٤. Save Checkpoint Button
+-- ✨ ٤. Copy Avatar with TextBox ✨
+local copyAvatarEnabled = false
+
+-- Label for TextBox
+local AvatarLabel = Instance.new("TextLabel")
+AvatarLabel.Size = UDim2.new(1, -24, 0, 25)
+AvatarLabel.Position = UDim2.new(0, 12, 0, 196)
+AvatarLabel.BackgroundTransparency = 1
+AvatarLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+AvatarLabel.TextSize = 12
+AvatarLabel.Font = Enum.Font.GothamBold
+AvatarLabel.Text = "Enter Username:"
+AvatarLabel.TextXAlignment = Enum.TextXAlignment.Left
+AvatarLabel.Parent = MainFrame
+
+-- TextBox for avatar username
+local AvatarTextBox = Instance.new("TextBox")
+AvatarTextBox.Size = UDim2.new(1, -24, 0, 35)
+AvatarTextBox.Position = UDim2.new(0, 12, 0, 221)
+AvatarTextBox.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+AvatarTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+AvatarTextBox.TextSize = 13
+AvatarTextBox.Font = Enum.Font.Gotham
+AvatarTextBox.PlaceholderText = "Username here..."
+AvatarTextBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+AvatarTextBox.Parent = MainFrame
+
+local TextBoxCorner = Instance.new("UICorner")
+TextBoxCorner.CornerRadius = UDim.new(0, 8)
+TextBoxCorner.Parent = AvatarTextBox
+
+local TextBoxStroke = Instance.new("UIStroke")
+TextBoxStroke.Color = Color3.fromRGB(160, 30, 30)
+TextBoxStroke.Thickness = 1
+TextBoxStroke.Parent = AvatarTextBox
+
+-- Copy Avatar Button
+local CopyAvatarBtn = Instance.new("TextButton")
+CopyAvatarBtn.Size = UDim2.new(1, -24, 0, 42)
+CopyAvatarBtn.Position = UDim2.new(0, 12, 0, 256)
+CopyAvatarBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
+CopyAvatarBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CopyAvatarBtn.TextSize = 13
+CopyAvatarBtn.Font = Enum.Font.GothamBold
+CopyAvatarBtn.Text = "Copy Avatar [Off]"
+CopyAvatarBtn.Parent = MainFrame
+
+local CopyAvatarCorner = Instance.new("UICorner")
+CopyAvatarCorner.CornerRadius = UDim.new(0, 8)
+CopyAvatarCorner.Parent = CopyAvatarBtn
+
+local CopyAvatarStroke = Instance.new("UIStroke")
+CopyAvatarStroke.Color = Color3.fromRGB(180, 40, 40)
+CopyAvatarStroke.Thickness = 1
+CopyAvatarStroke.Parent = CopyAvatarBtn
+
+CopyAvatarBtn.MouseButton1Click:Connect(function()
+    copyAvatarEnabled = not copyAvatarEnabled
+    if copyAvatarEnabled then
+        local username = AvatarTextBox.Text
+        if username == "" or username == nil then
+            CopyAvatarBtn.Text = "Enter Username!"
+            CopyAvatarBtn.BackgroundColor3 = Color3.fromRGB(170, 50, 50)
+            task.wait(1.5)
+            CopyAvatarBtn.Text = "Copy Avatar [Off]"
+            CopyAvatarBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
+            copyAvatarEnabled = false
+            return
+        end
+        
+        -- کۆپی کردنی avatar
+        local targetPlayer = Players:FindFirstChild(username)
+        if targetPlayer and targetPlayer.Character then
+            local targetChar = targetPlayer.Character
+            local myChar = player.Character
+            
+            if myChar then
+                -- کۆپی کردنی جلکی
+                pcall(function()
+                    for _, part in ipairs(targetChar:FindFirstChild("Head"):GetChildren()) do
+                        if part:IsA("Decal") then
+                            local newDecal = part:Clone()
+                            newDecal.Parent = myChar:FindFirstChild("Head")
+                        end
+                    end
+                end)
+                
+                CopyAvatarBtn.Text = "Avatar Copied!"
+                CopyAvatarBtn.BackgroundColor3 = Color3.fromRGB(35, 150, 80)
+                CopyAvatarStroke.Color = Color3.fromRGB(50, 200, 100)
+                task.wait(1.5)
+                CopyAvatarBtn.Text = "Copy Avatar [On]"
+                CopyAvatarBtn.BackgroundColor3 = Color3.fromRGB(35, 150, 80)
+                CopyAvatarStroke.Color = Color3.fromRGB(50, 200, 100)
+            end
+        else
+            CopyAvatarBtn.Text = "User Not Found!"
+            CopyAvatarBtn.BackgroundColor3 = Color3.fromRGB(170, 50, 50)
+            task.wait(1.5)
+            CopyAvatarBtn.Text = "Copy Avatar [Off]"
+            CopyAvatarBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
+            copyAvatarEnabled = false
+        end
+    else
+        CopyAvatarBtn.Text = "Copy Avatar [Off]"
+        CopyAvatarBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
+        CopyAvatarStroke.Color = Color3.fromRGB(180, 40, 40)
+    end
+end)
+
+-- ٥. Save Checkpoint Button
 local savedCFrame = nil
 local SaveCPBtn = Instance.new("TextButton")
 SaveCPBtn.Size = UDim2.new(1, -24, 0, 42)
-SaveCPBtn.Position = UDim2.new(0, 12, 0, 196)
+SaveCPBtn.Position = UDim2.new(0, 12, 0, 303)
 SaveCPBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
 SaveCPBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 SaveCPBtn.TextSize = 13
@@ -196,10 +306,10 @@ SaveCPBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ٥. Teleport to Checkpoint Button
+-- ٦. Teleport to Checkpoint Button
 local TPCPBtn = Instance.new("TextButton")
 TPCPBtn.Size = UDim2.new(1, -24, 0, 42)
-TPCPBtn.Position = UDim2.new(0, 12, 0, 243)
+TPCPBtn.Position = UDim2.new(0, 12, 0, 350)
 TPCPBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
 TPCPBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 TPCPBtn.TextSize = 13
@@ -240,10 +350,10 @@ TPCPBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ٦. TikTok Link Button
+-- ٧. TikTok Link Button
 local TikTokBtn = Instance.new("TextButton")
 TikTokBtn.Size = UDim2.new(1, -24, 0, 42)
-TikTokBtn.Position = UDim2.new(0, 12, 0, 290)
+TikTokBtn.Position = UDim2.new(0, 12, 0, 397)
 TikTokBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
 TikTokBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
 TikTokBtn.TextSize = 13
