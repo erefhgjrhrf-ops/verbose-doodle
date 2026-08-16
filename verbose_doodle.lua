@@ -161,113 +161,146 @@ createToggle("Big Character", 149, function(state)
     end
 end)
 
--- ✨ ٤. Copy Avatar with TextBox ✨
-local copyAvatarEnabled = false
-
+-- ✨ ٤. Clone Player Full Character ✨
 -- Label for TextBox
-local AvatarLabel = Instance.new("TextLabel")
-AvatarLabel.Size = UDim2.new(1, -24, 0, 25)
-AvatarLabel.Position = UDim2.new(0, 12, 0, 196)
-AvatarLabel.BackgroundTransparency = 1
-AvatarLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-AvatarLabel.TextSize = 12
-AvatarLabel.Font = Enum.Font.GothamBold
-AvatarLabel.Text = "Enter Username:"
-AvatarLabel.TextXAlignment = Enum.TextXAlignment.Left
-AvatarLabel.Parent = MainFrame
+local CloneLabel = Instance.new("TextLabel")
+CloneLabel.Size = UDim2.new(1, -24, 0, 25)
+CloneLabel.Position = UDim2.new(0, 12, 0, 196)
+CloneLabel.BackgroundTransparency = 1
+CloneLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloneLabel.TextSize = 12
+CloneLabel.Font = Enum.Font.GothamBold
+CloneLabel.Text = "Enter Username:"
+CloneLabel.TextXAlignment = Enum.TextXAlignment.Left
+CloneLabel.Parent = MainFrame
 
--- TextBox for avatar username
-local AvatarTextBox = Instance.new("TextBox")
-AvatarTextBox.Size = UDim2.new(1, -24, 0, 35)
-AvatarTextBox.Position = UDim2.new(0, 12, 0, 221)
-AvatarTextBox.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-AvatarTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-AvatarTextBox.TextSize = 13
-AvatarTextBox.Font = Enum.Font.Gotham
-AvatarTextBox.PlaceholderText = "Username here..."
-AvatarTextBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
-AvatarTextBox.Parent = MainFrame
+-- TextBox for player username
+local CloneTextBox = Instance.new("TextBox")
+CloneTextBox.Size = UDim2.new(1, -24, 0, 35)
+CloneTextBox.Position = UDim2.new(0, 12, 0, 221)
+CloneTextBox.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
+CloneTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloneTextBox.TextSize = 13
+CloneTextBox.Font = Enum.Font.Gotham
+CloneTextBox.PlaceholderText = "Username here..."
+CloneTextBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+CloneTextBox.Parent = MainFrame
 
 local TextBoxCorner = Instance.new("UICorner")
 TextBoxCorner.CornerRadius = UDim.new(0, 8)
-TextBoxCorner.Parent = AvatarTextBox
+TextBoxCorner.Parent = CloneTextBox
 
 local TextBoxStroke = Instance.new("UIStroke")
 TextBoxStroke.Color = Color3.fromRGB(160, 30, 30)
 TextBoxStroke.Thickness = 1
-TextBoxStroke.Parent = AvatarTextBox
+TextBoxStroke.Parent = CloneTextBox
 
--- Copy Avatar Button
-local CopyAvatarBtn = Instance.new("TextButton")
-CopyAvatarBtn.Size = UDim2.new(1, -24, 0, 42)
-CopyAvatarBtn.Position = UDim2.new(0, 12, 0, 256)
-CopyAvatarBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
-CopyAvatarBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-CopyAvatarBtn.TextSize = 13
-CopyAvatarBtn.Font = Enum.Font.GothamBold
-CopyAvatarBtn.Text = "Copy Avatar [Off]"
-CopyAvatarBtn.Parent = MainFrame
+-- Clone Player Button
+local ClonePlayerBtn = Instance.new("TextButton")
+ClonePlayerBtn.Size = UDim2.new(1, -24, 0, 42)
+ClonePlayerBtn.Position = UDim2.new(0, 12, 0, 256)
+ClonePlayerBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
+ClonePlayerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ClonePlayerBtn.TextSize = 13
+ClonePlayerBtn.Font = Enum.Font.GothamBold
+ClonePlayerBtn.Text = "Clone Player [Off]"
+ClonePlayerBtn.Parent = MainFrame
 
-local CopyAvatarCorner = Instance.new("UICorner")
-CopyAvatarCorner.CornerRadius = UDim.new(0, 8)
-CopyAvatarCorner.Parent = CopyAvatarBtn
+local CloneCorner = Instance.new("UICorner")
+CloneCorner.CornerRadius = UDim.new(0, 8)
+CloneCorner.Parent = ClonePlayerBtn
 
-local CopyAvatarStroke = Instance.new("UIStroke")
-CopyAvatarStroke.Color = Color3.fromRGB(180, 40, 40)
-CopyAvatarStroke.Thickness = 1
-CopyAvatarStroke.Parent = CopyAvatarBtn
+local CloneStroke = Instance.new("UIStroke")
+CloneStroke.Color = Color3.fromRGB(180, 40, 40)
+CloneStroke.Thickness = 1
+CloneStroke.Parent = ClonePlayerBtn
 
-CopyAvatarBtn.MouseButton1Click:Connect(function()
-    copyAvatarEnabled = not copyAvatarEnabled
-    if copyAvatarEnabled then
-        local username = AvatarTextBox.Text
+local cloneEnabled = false
+
+function ClonePlayerFullCharacter(username)
+    local targetPlayer = Players:FindFirstChild(username)
+    if not targetPlayer or not targetPlayer.Character then
+        return false
+    end
+    
+    local targetChar = targetPlayer.Character
+    local myChar = player.Character
+    
+    if not myChar then
+        return false
+    end
+    
+    pcall(function()
+        -- کۆپی کردنی تێدابووی کۆمەل
+        for _, bodyPart in ipairs(targetChar:GetDescendants()) do
+            if bodyPart:IsA("BasePart") then
+                local myPart = myChar:FindFirstChild(bodyPart.Name)
+                if myPart then
+                    -- کۆپی کردنی رەنگ
+                    pcall(function()
+                        myPart.Color = bodyPart.Color
+                    end)
+                    
+                    -- کۆپی کردنی Material
+                    pcall(function()
+                        myPart.Material = bodyPart.Material
+                    end)
+                    
+                    -- کۆپی کردنی Texture
+                    pcall(function()
+                        for _, decal in ipairs(bodyPart:GetChildren()) do
+                            if decal:IsA("Decal") then
+                                local newDecal = decal:Clone()
+                                newDecal.Parent = myPart
+                            end
+                        end
+                    end)
+                end
+            elseif bodyPart:IsA("Accessory") then
+                -- کۆپی کردنی ئەکسێسۆریز
+                local newAccessory = bodyPart:Clone()
+                newAccessory.Parent = myChar
+            end
+        end
+    end)
+    
+    return true
+end
+
+ClonePlayerBtn.MouseButton1Click:Connect(function()
+    cloneEnabled = not cloneEnabled
+    if cloneEnabled then
+        local username = CloneTextBox.Text
         if username == "" or username == nil then
-            CopyAvatarBtn.Text = "Enter Username!"
-            CopyAvatarBtn.BackgroundColor3 = Color3.fromRGB(170, 50, 50)
+            ClonePlayerBtn.Text = "Enter Username!"
+            ClonePlayerBtn.BackgroundColor3 = Color3.fromRGB(170, 50, 50)
             task.wait(1.5)
-            CopyAvatarBtn.Text = "Copy Avatar [Off]"
-            CopyAvatarBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
-            copyAvatarEnabled = false
+            ClonePlayerBtn.Text = "Clone Player [Off]"
+            ClonePlayerBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
+            cloneEnabled = false
             return
         end
         
-        -- کۆپی کردنی avatar
-        local targetPlayer = Players:FindFirstChild(username)
-        if targetPlayer and targetPlayer.Character then
-            local targetChar = targetPlayer.Character
-            local myChar = player.Character
-            
-            if myChar then
-                -- کۆپی کردنی جلکی
-                pcall(function()
-                    for _, part in ipairs(targetChar:FindFirstChild("Head"):GetChildren()) do
-                        if part:IsA("Decal") then
-                            local newDecal = part:Clone()
-                            newDecal.Parent = myChar:FindFirstChild("Head")
-                        end
-                    end
-                end)
-                
-                CopyAvatarBtn.Text = "Avatar Copied!"
-                CopyAvatarBtn.BackgroundColor3 = Color3.fromRGB(35, 150, 80)
-                CopyAvatarStroke.Color = Color3.fromRGB(50, 200, 100)
-                task.wait(1.5)
-                CopyAvatarBtn.Text = "Copy Avatar [On]"
-                CopyAvatarBtn.BackgroundColor3 = Color3.fromRGB(35, 150, 80)
-                CopyAvatarStroke.Color = Color3.fromRGB(50, 200, 100)
-            end
-        else
-            CopyAvatarBtn.Text = "User Not Found!"
-            CopyAvatarBtn.BackgroundColor3 = Color3.fromRGB(170, 50, 50)
+        if ClonePlayerFullCharacter(username) then
+            ClonePlayerBtn.Text = "Player Cloned!"
+            ClonePlayerBtn.BackgroundColor3 = Color3.fromRGB(35, 150, 80)
+            CloneStroke.Color = Color3.fromRGB(50, 200, 100)
             task.wait(1.5)
-            CopyAvatarBtn.Text = "Copy Avatar [Off]"
-            CopyAvatarBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
-            copyAvatarEnabled = false
+            ClonePlayerBtn.Text = "Clone Player [On]"
+            ClonePlayerBtn.BackgroundColor3 = Color3.fromRGB(35, 150, 80)
+            CloneStroke.Color = Color3.fromRGB(50, 200, 100)
+        else
+            ClonePlayerBtn.Text = "User Not Found!"
+            ClonePlayerBtn.BackgroundColor3 = Color3.fromRGB(170, 50, 50)
+            task.wait(1.5)
+            ClonePlayerBtn.Text = "Clone Player [Off]"
+            ClonePlayerBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
+            cloneEnabled = false
         end
     else
-        CopyAvatarBtn.Text = "Copy Avatar [Off]"
-        CopyAvatarBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
-        CopyAvatarStroke.Color = Color3.fromRGB(180, 40, 40)
+        ClonePlayerBtn.Text = "Clone Player [Off]"
+        ClonePlayerBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
+        CloneStroke.Color = Color3.fromRGB(180, 40, 40)
     end
 end)
 
