@@ -16,8 +16,8 @@ ScreenGui.Parent = playerGui
 
 -- مێنوی سەرەکی (دیزاینی مۆدێرن و سەرنجڕاکێشی سور)
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 280, 0, 450)
-MainFrame.Position = UDim2.new(0.5, -140, 0.5, -225)
+MainFrame.Size = UDim2.new(0, 280, 0, 390)
+MainFrame.Position = UDim2.new(0.5, -140, 0.5, -195)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -82,7 +82,7 @@ MinBtn.MouseButton1Click:Connect(function()
         end
     end
     if isOpen then
-        MainFrame.Size = UDim2.new(0, 280, 0, 450)
+        MainFrame.Size = UDim2.new(0, 280, 0, 390)
     else
         MainFrame.Size = UDim2.new(0, 280, 0, 45)
     end
@@ -161,154 +161,11 @@ createToggle("Big Character", 149, function(state)
     end
 end)
 
--- ✨ ٤. Clone Player Full Character ✨
--- Label for TextBox
-local CloneLabel = Instance.new("TextLabel")
-CloneLabel.Size = UDim2.new(1, -24, 0, 25)
-CloneLabel.Position = UDim2.new(0, 12, 0, 196)
-CloneLabel.BackgroundTransparency = 1
-CloneLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloneLabel.TextSize = 12
-CloneLabel.Font = Enum.Font.GothamBold
-CloneLabel.Text = "Enter Username:"
-CloneLabel.TextXAlignment = Enum.TextXAlignment.Left
-CloneLabel.Parent = MainFrame
-
--- TextBox for player username
-local CloneTextBox = Instance.new("TextBox")
-CloneTextBox.Size = UDim2.new(1, -24, 0, 35)
-CloneTextBox.Position = UDim2.new(0, 12, 0, 221)
-CloneTextBox.BackgroundColor3 = Color3.fromRGB(50, 50, 60)
-CloneTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
-CloneTextBox.TextSize = 13
-CloneTextBox.Font = Enum.Font.Gotham
-CloneTextBox.PlaceholderText = "Username here..."
-CloneTextBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
-CloneTextBox.Parent = MainFrame
-
-local TextBoxCorner = Instance.new("UICorner")
-TextBoxCorner.CornerRadius = UDim.new(0, 8)
-TextBoxCorner.Parent = CloneTextBox
-
-local TextBoxStroke = Instance.new("UIStroke")
-TextBoxStroke.Color = Color3.fromRGB(160, 30, 30)
-TextBoxStroke.Thickness = 1
-TextBoxStroke.Parent = CloneTextBox
-
--- Clone Player Button
-local ClonePlayerBtn = Instance.new("TextButton")
-ClonePlayerBtn.Size = UDim2.new(1, -24, 0, 42)
-ClonePlayerBtn.Position = UDim2.new(0, 12, 0, 256)
-ClonePlayerBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
-ClonePlayerBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-ClonePlayerBtn.TextSize = 13
-ClonePlayerBtn.Font = Enum.Font.GothamBold
-ClonePlayerBtn.Text = "Clone Player [Off]"
-ClonePlayerBtn.Parent = MainFrame
-
-local CloneCorner = Instance.new("UICorner")
-CloneCorner.CornerRadius = UDim.new(0, 8)
-CloneCorner.Parent = ClonePlayerBtn
-
-local CloneStroke = Instance.new("UIStroke")
-CloneStroke.Color = Color3.fromRGB(180, 40, 40)
-CloneStroke.Thickness = 1
-CloneStroke.Parent = ClonePlayerBtn
-
-local cloneEnabled = false
-
-function ClonePlayerFullCharacter(username)
-    local targetPlayer = Players:FindFirstChild(username)
-    if not targetPlayer or not targetPlayer.Character then
-        return false
-    end
-    
-    local targetChar = targetPlayer.Character
-    local myChar = player.Character
-    
-    if not myChar then
-        return false
-    end
-    
-    pcall(function()
-        -- کۆپی کردنی تێدابووی کۆمەل
-        for _, bodyPart in ipairs(targetChar:GetDescendants()) do
-            if bodyPart:IsA("BasePart") then
-                local myPart = myChar:FindFirstChild(bodyPart.Name)
-                if myPart then
-                    -- کۆپی کردنی رەنگ
-                    pcall(function()
-                        myPart.Color = bodyPart.Color
-                    end)
-                    
-                    -- کۆپی کردنی Material
-                    pcall(function()
-                        myPart.Material = bodyPart.Material
-                    end)
-                    
-                    -- کۆپی کردنی Texture
-                    pcall(function()
-                        for _, decal in ipairs(bodyPart:GetChildren()) do
-                            if decal:IsA("Decal") then
-                                local newDecal = decal:Clone()
-                                newDecal.Parent = myPart
-                            end
-                        end
-                    end)
-                end
-            elseif bodyPart:IsA("Accessory") then
-                -- کۆپی کردنی ئەکسێسۆریز
-                local newAccessory = bodyPart:Clone()
-                newAccessory.Parent = myChar
-            end
-        end
-    end)
-    
-    return true
-end
-
-ClonePlayerBtn.MouseButton1Click:Connect(function()
-    cloneEnabled = not cloneEnabled
-    if cloneEnabled then
-        local username = CloneTextBox.Text
-        if username == "" or username == nil then
-            ClonePlayerBtn.Text = "Enter Username!"
-            ClonePlayerBtn.BackgroundColor3 = Color3.fromRGB(170, 50, 50)
-            task.wait(1.5)
-            ClonePlayerBtn.Text = "Clone Player [Off]"
-            ClonePlayerBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
-            cloneEnabled = false
-            return
-        end
-        
-        if ClonePlayerFullCharacter(username) then
-            ClonePlayerBtn.Text = "Player Cloned!"
-            ClonePlayerBtn.BackgroundColor3 = Color3.fromRGB(35, 150, 80)
-            CloneStroke.Color = Color3.fromRGB(50, 200, 100)
-            task.wait(1.5)
-            ClonePlayerBtn.Text = "Clone Player [On]"
-            ClonePlayerBtn.BackgroundColor3 = Color3.fromRGB(35, 150, 80)
-            CloneStroke.Color = Color3.fromRGB(50, 200, 100)
-        else
-            ClonePlayerBtn.Text = "User Not Found!"
-            ClonePlayerBtn.BackgroundColor3 = Color3.fromRGB(170, 50, 50)
-            task.wait(1.5)
-            ClonePlayerBtn.Text = "Clone Player [Off]"
-            ClonePlayerBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
-            cloneEnabled = false
-        end
-    else
-        ClonePlayerBtn.Text = "Clone Player [Off]"
-        ClonePlayerBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
-        CloneStroke.Color = Color3.fromRGB(180, 40, 40)
-    end
-end)
-
--- ٥. Save Checkpoint Button
+-- ٤. Save Checkpoint Button
 local savedCFrame = nil
 local SaveCPBtn = Instance.new("TextButton")
 SaveCPBtn.Size = UDim2.new(1, -24, 0, 42)
-SaveCPBtn.Position = UDim2.new(0, 12, 0, 303)
+SaveCPBtn.Position = UDim2.new(0, 12, 0, 196)
 SaveCPBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
 SaveCPBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 SaveCPBtn.TextSize = 13
@@ -339,10 +196,10 @@ SaveCPBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ٦. Teleport to Checkpoint Button
+-- ٥. Teleport to Checkpoint Button
 local TPCPBtn = Instance.new("TextButton")
 TPCPBtn.Size = UDim2.new(1, -24, 0, 42)
-TPCPBtn.Position = UDim2.new(0, 12, 0, 350)
+TPCPBtn.Position = UDim2.new(0, 12, 0, 243)
 TPCPBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
 TPCPBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 TPCPBtn.TextSize = 13
@@ -383,10 +240,10 @@ TPCPBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ٧. TikTok Link Button
+-- ٦. TikTok Link Button
 local TikTokBtn = Instance.new("TextButton")
 TikTokBtn.Size = UDim2.new(1, -24, 0, 42)
-TikTokBtn.Position = UDim2.new(0, 12, 0, 397)
+TikTokBtn.Position = UDim2.new(0, 12, 0, 290)
 TikTokBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
 TikTokBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
 TikTokBtn.TextSize = 13
