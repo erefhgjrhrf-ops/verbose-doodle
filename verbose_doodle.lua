@@ -16,8 +16,8 @@ ScreenGui.Parent = playerGui
 
 -- مێنوی سەرەکی (دیزاینی مۆدێرن و سەرنجڕاکێشی سور)
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 280, 0, 390)
-MainFrame.Position = UDim2.new(0.5, -140, 0.5, -195)
+MainFrame.Size = UDim2.new(0, 280, 0, 343)
+MainFrame.Position = UDim2.new(0.5, -140, 0.5, -171)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -82,7 +82,7 @@ MinBtn.MouseButton1Click:Connect(function()
         end
     end
     if isOpen then
-        MainFrame.Size = UDim2.new(0, 280, 0, 390)
+        MainFrame.Size = UDim2.new(0, 280, 0, 343)
     else
         MainFrame.Size = UDim2.new(0, 280, 0, 45)
     end
@@ -161,81 +161,11 @@ createToggle("Big Character", 149, function(state)
     end
 end)
 
--- ✨ ٤. Add Name Tag on All Body Parts ✨
-function AddNameTagToAllParts(char)
-    local parts = {
-        char:FindFirstChild("Head"),
-        char:FindFirstChild("UpperTorso") or char:FindFirstChild("Torso"),
-        char:FindFirstChild("LeftUpperArm"),
-        char:FindFirstChild("RightUpperArm"),
-        char:FindFirstChild("LeftLowerArm"),
-        char:FindFirstChild("RightLowerArm"),
-        char:FindFirstChild("LeftUpperLeg"),
-        char:FindFirstChild("RightUpperLeg"),
-        char:FindFirstChild("LeftLowerLeg"),
-        char:FindFirstChild("RightLowerLeg")
-    }
-    
-    for _, part in ipairs(parts) do
-        if part then
-            -- Remove old billboard
-            local oldBillboard = part:FindFirstChildOfClass("BillboardGui")
-            if oldBillboard then oldBillboard:Destroy() end
-            
-            -- Create new BillboardGui
-            local billboardGui = Instance.new("BillboardGui")
-            billboardGui.Size = UDim2.new(0, 150, 0, 40)
-            billboardGui.MaxDistance = 100
-            billboardGui.StudsOffset = Vector3.new(0, 3, 0)
-            billboardGui.Parent = part
-            billboardGui.Adornee = part
-            
-            -- TextLabel for name
-            local textLabel = Instance.new("TextLabel")
-            textLabel.Size = UDim2.new(1, 0, 1, 0)
-            textLabel.BackgroundTransparency = 0.3
-            textLabel.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-            textLabel.TextColor3 = Color3.fromRGB(255, 80, 80)
-            textLabel.TextSize = 16
-            textLabel.Font = Enum.Font.GothamBold
-            textLabel.Text = player.Name
-            textLabel.Parent = billboardGui
-            
-            -- Corner Radius
-            local corner = Instance.new("UICorner")
-            corner.CornerRadius = UDim.new(0, 8)
-            corner.Parent = textLabel
-        end
-    end
-    
-    print("✅ Name Tags Added to All Body Parts!")
-end
-
-function RemoveNameTags(char)
-    for _, part in ipairs(char:GetDescendants()) do
-        if part:IsA("BasePart") then
-            local billboards = part:FindFirstChildOfClass("BillboardGui")
-            if billboards then billboards:Destroy() end
-        end
-    end
-end
-
-createToggle("Show Name Tag", 196, function(state)
-    local character = player.Character
-    if character then
-        if state then
-            AddNameTagToAllParts(character)
-        else
-            RemoveNameTags(character)
-        end
-    end
-end)
-
--- ٥. Save Checkpoint Button
+-- ٤. Save Checkpoint Button
 local savedCFrame = nil
 local SaveCPBtn = Instance.new("TextButton")
 SaveCPBtn.Size = UDim2.new(1, -24, 0, 42)
-SaveCPBtn.Position = UDim2.new(0, 12, 0, 243)
+SaveCPBtn.Position = UDim2.new(0, 12, 0, 196)
 SaveCPBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
 SaveCPBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 SaveCPBtn.TextSize = 13
@@ -266,10 +196,10 @@ SaveCPBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ٦. Teleport to Checkpoint Button
+-- ٥. Teleport to Checkpoint Button
 local TPCPBtn = Instance.new("TextButton")
 TPCPBtn.Size = UDim2.new(1, -24, 0, 42)
-TPCPBtn.Position = UDim2.new(0, 12, 0, 290)
+TPCPBtn.Position = UDim2.new(0, 12, 0, 243)
 TPCPBtn.BackgroundColor3 = Color3.fromRGB(140, 25, 25)
 TPCPBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 TPCPBtn.TextSize = 13
@@ -310,10 +240,10 @@ TPCPBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- ٧. TikTok Link Button
+-- ٦. TikTok Link Button
 local TikTokBtn = Instance.new("TextButton")
 TikTokBtn.Size = UDim2.new(1, -24, 0, 42)
-TikTokBtn.Position = UDim2.new(0, 12, 0, 337)
+TikTokBtn.Position = UDim2.new(0, 12, 0, 290)
 TikTokBtn.BackgroundColor3 = Color3.fromRGB(28, 28, 35)
 TikTokBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
 TikTokBtn.TextSize = 13
